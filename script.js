@@ -54,33 +54,63 @@ async function fetchDownloadCount() {
 
 // Fetch download URLs
 async function fetchDownloads() {
+    // The names of the files we are looking for
+    const filenames = {
+        windows: 'HyPrism.exe',
+        mac: 'HyPrism-macOS-arm64.dmg',
+        linuxAppImage: 'HyPrism-x86_64.AppImage',
+        linuxFlatpak: 'HyPrism.flatpak',
+        linuxTar: 'HyPrism-linux-x86_64.tar.gz'
+    };
+
+	// Generate "direct" links in case the API fails
+	// This is the standard GitHub path for downloading files from the LATEST STABLE release
+    const baseUrl = `https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}/releases/latest/download/`;
+    
+    let links = {
+        windows: baseUrl + filenames.windows,
+        mac: baseUrl + filenames.mac,
+        linux: baseUrl + filenames.linuxAppImage // По умолчанию AppImage
+    };
+
     try {
-        const response = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/releases/latest`);
+        // Use ?per_page=1 instead of /latest to see pre-release versions as well
+        const response = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/releases?per_page=1`);
         
-        if (!response.ok) throw new Error('Failed to fetch');
+        if (!response.ok) throw new Error('API request failed');
         
-        const release = await response.json();
-        const assets = release.assets;
+        const releases = await response.json();
+        if (!releases || releases.length === 0) throw new Error('No releases found');
         
-        // Windows
-        const win = assets.find(a => a.name.endsWith('.exe'));
-        if (win) document.getElementById('download-windows').href = win.browser_download_url;
+        const latestRelease = releases[0]; // Берем самый свежий релиз (даже если это pre-release)
+        const assets = latestRelease.assets;
         
-        // macOS
-        const mac = assets.find(a => a.name.endsWith('.dmg'));
-        if (mac) document.getElementById('download-macos').href = mac.browser_download_url;
+        // Windows Search
+        const winAsset = assets.find(a => a.name === filenames.windows);
+        if (winAsset) links.windows = winAsset.browser_download_url;
         
-        // Linux
-        const linux = assets.find(a => a.name.endsWith('.AppImage') || a.name.endsWith('.flatpak'));
-        if (linux) document.getElementById('download-linux').href = linux.browser_download_url;
+        // Search macOS
+        const macAsset = assets.find(a => a.name === filenames.mac);
+        if (macAsset) links.mac = macAsset.browser_download_url;
+        
+        // Linux Search (prioritized)
+        const appImage = assets.find(a => a.name === filenames.linuxAppImage);
+        const flatpak = assets.find(a => a.name === filenames.linuxFlatpak);
+        const tar = assets.find(a => a.name === filenames.linuxTar);
+        
+        if (appImage) links.linux = appImage.browser_download_url;
+        else if (flatpak) links.linux = flatpak.browser_download_url;
+        else if (tar) links.linux = tar.browser_download_url;
         
     } catch (error) {
-        // Fallback to releases page
-        const fallback = `https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}/releases`;
-        document.getElementById('download-windows').href = fallback;
-        document.getElementById('download-macos').href = fallback;
-        document.getElementById('download-linux').href = fallback;
+        console.warn('GitHub API fetch failed, falling back to direct links.', error);
+        // We do not change the links to the releases page, we leave the generated direct links
     }
+
+    // Apply links to buttons
+    document.getElementById('download-windows').href = links.windows;
+    document.getElementById('download-macos').href = links.mac;
+    document.getElementById('download-linux').href = links.linux;
 }
 
 // Init
