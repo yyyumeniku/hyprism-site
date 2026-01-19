@@ -85,15 +85,15 @@ async function fetchDownloads() {
         const latestRelease = releases[0]; // Берем самый свежий релиз (даже если это pre-release)
         const assets = latestRelease.assets;
         
-        // Windows Search
+        // Windows
         const winAsset = assets.find(a => a.name === filenames.windows);
         if (winAsset) links.windows = winAsset.browser_download_url;
         
-        // Search macOS
+        // macOS
         const macAsset = assets.find(a => a.name === filenames.mac);
         if (macAsset) links.mac = macAsset.browser_download_url;
         
-        // Linux Search (prioritized)
+        // Linux
         const appImage = assets.find(a => a.name === filenames.linuxAppImage);
         const flatpak = assets.find(a => a.name === filenames.linuxFlatpak);
         const tar = assets.find(a => a.name === filenames.linuxTar);
