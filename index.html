@@ -1,360 +1,229 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>HyPrism - Hytale Launcher</title>
-    <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --hytale-green: #207e5c;
-            --hytale-light-green: #4ade80;
-            --hytale-dark: #0d120f;
-            --hytale-gold: #d4a373;
-            --hytale-brown: #3d2b1f;
-        }
-
-        body {
-            background-color: var(--hytale-dark);
-            background-image: radial-gradient(circle at top, rgba(32, 126, 92, 0.15) 0%, transparent 50%), 
-                              linear-gradient(rgba(18, 24, 20, 0.85), rgba(18, 24, 20, 0.95)), 
-                              url('https://www.bisecthosting.com/_ipx/q_75&s_1536x864/static/img/game-assets/backgrounds/hytale.webp');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            color: #f3f4f6;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
-
-        #preloader {
-            position: fixed;
-            inset: 0;
-            background: var(--hytale-dark);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .preloader-hidden { opacity: 0; visibility: hidden; }
-
-        .hytale-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(12px);
-            border-radius: 24px;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .hytale-card:hover {
-            background: rgba(255, 255, 255, 0.06);
-            border-color: var(--hytale-green);
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 20px rgba(32, 126, 92, 0.2);
-        }
-
-        .btn-hytale {
-            background: linear-gradient(135deg, var(--hytale-green), #145a41);
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(32, 126, 92, 0.3);
-        }
-
-        .btn-hytale::after {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: 0.5s;
-        }
-
-        .btn-hytale:hover::after { left: 100%; }
-
-        .btn-hytale:hover {
-            filter: brightness(1.2);
-            box-shadow: 0 8px 25px rgba(32, 126, 92, 0.5);
-            transform: translateY(-2px);
-        }
-
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0a0f0c; }
-        ::-webkit-scrollbar-thumb { background: var(--hytale-green); border-radius: 10px; }
-
-        .text-glow {
-            text-shadow: 0 0 15px rgba(74, 222, 128, 0.3);
-        }
-    </style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HyPrism</title>
+    <meta name="description" content="An open source third party launcher for Hytale. Fast, secure, and community built.">
+    <meta property="og:title" content="HyPrism">
+    <meta property="og:description" content="An open source third party launcher for Hytale.">
+    <meta property="og:url" content="https://hyprism.vercel.app">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#7b8cff">
+    <link rel="icon" href="assets/images/icon.png" type="image/png">
+    <link rel="apple-touch-icon" href="assets/images/icon.png">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
 </head>
-<body class="overflow-x-hidden">
+<body>
 
-    <div id="preloader">
-        <div class="loader-content text-center">
-            <img src="assets/logo.svg" alt="Loading..." class="w-20 h-20 mb-6 mx-auto animate-bounce">
-            <div class="w-32 h-1.5 bg-white/10 mx-auto rounded-full overflow-hidden">
-                <div class="w-full h-full bg-[#207e5c] origin-left animate-[loading_1.5s_infinite_ease-in-out]"></div>
-            </div>
-        </div>
-    </div>
+    <!-- scroll progress bar at the very top -->
+    <div class="scroll-progress" id="scroll-progress"></div>
 
-    <header class="fixed inset-x-0 top-0 z-50 bg-black/20 backdrop-blur-xl border-b border-white/5 px-6 h-20 flex items-center">
-        <div class="max-w-7xl mx-auto w-full flex items-center justify-between">
-            <div class="flex items-center gap-4 group cursor-pointer">
-                <img src="assets/logo.svg" alt="HyPrism Logo" class="h-10 w-10 group-hover:rotate-12 transition-transform">
-                <span class="text-2xl font-black text-white tracking-tighter">
-                    HY<span class="text-[#207e5c]">PRISM</span>
-                </span>
-            </div>
-            <nav class="hidden md:flex gap-10 text-[11px] font-bold uppercase tracking-[0.2em] text-white/70">
-                <a href="#" class="hover:text-white transition-colors relative after:content-[''] after:absolute after:-bottom-2 after:left-0 after:w-0 after:h-0.5 after:bg-[#207e5c] hover:after:w-full after:transition-all">Home</a>
-                <a href="#downloads" class="hover:text-white transition-colors relative after:content-[''] after:absolute after:-bottom-2 after:left-0 after:w-0 after:h-0.5 after:bg-[#207e5c] hover:after:w-full after:transition-all">Download</a>
-                <a href="https://github.com/yyyumeniku/HyPrism" target="_blank" class="hover:text-white transition-colors flex items-center gap-2">
-                    GITHUB <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+    <!-- sticky header that follows you everywhere -->
+    <header class="header" id="header">
+        <div class="header__container">
+            <nav class="header__nav">
+                <a href="#" class="header__link">home</a>
+                <a href="#downloads" class="header__link">download</a>
+                <a href="#contributors" class="header__link">team</a>
+                <a href="https://github.com/HyPrismTeam/HyPrism" target="_blank" rel="noopener" class="header__link header__link--ext">
+                    github
+                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6m0 0v6m0-6L10 14"/></svg>
                 </a>
             </nav>
+            <button class="header__burger" id="menu-toggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
         </div>
     </header>
 
-    <section id="hero" class="relative min-h-screen flex items-center justify-center pt-24 pb-12">
-        <div class="relative z-10 text-center px-6 max-w-5xl mx-auto">
-            <div data-aos="fade-down" class="mb-8 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[#4ade80] text-xs font-bold uppercase tracking-widest">
-                <span class="relative flex h-2 w-2">
-                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                </span>
-                Version 1.0.27 Available
-            </div>
-            
-<h1 class="text-5xl md:text-8xl font-extrabold text-white mb-8 tracking-tight leading-[0.9]" data-aos="zoom-out-up">
-    The <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#207e5c] via-[#4ade80] to-[#207e5c] bg-[length:200%_auto] animate-[gradient_3s_linear_infinite]">Open Source</span>
-    <br> 
-    Launcher
-</h1>
-            
-            <p class="text-xl text-gray-400 mb-12 max-w-2xl mx-auto leading-relaxed font-medium" data-aos="fade-up" data-aos-delay="200">
-                The ultimate experience for Orbis. Fast, secure, and built by the community for the community.
+    <!-- mobile nav for phone users -->
+    <div class="mobile-nav" id="mobile-nav">
+        <a href="#" class="mobile-nav__link">home</a>
+        <a href="#downloads" class="mobile-nav__link">download</a>
+        <a href="#contributors" class="mobile-nav__link">team</a>
+        <a href="https://github.com/HyPrismTeam/HyPrism" target="_blank" rel="noopener" class="mobile-nav__link">github</a>
+    </div>
+
+    <!-- particle canvas lives behind the hero -->
+    <canvas id="particle-canvas" class="particle-canvas"></canvas>
+
+    <!-- hero section, the grand entrance -->
+    <section class="hero" id="hero">
+        <div class="hero__glow" id="hero-glow"></div>
+        <div class="hero__content" data-parallax="0.08">
+            <img src="assets/images/team_logo.png" alt="HyPrism" class="hero__logo" data-aos="zoom-in">
+
+            <h1 class="hero__title" data-aos="fade-up" data-aos-delay="150">
+                the <span class="text-gradient">open source</span> launcher for hytale.
+            </h1>
+
+            <p class="hero__subtitle" data-aos="fade-up" data-aos-delay="250">
+                hyprism is a free and open source third party launcher for hytale, the game by hypixel studios. we are not affiliated with them. just fans who wanted something better.
             </p>
-            
-            <div class="flex flex-col sm:flex-row gap-5 justify-center items-center" data-aos="fade-up" data-aos-delay="400">
-                <a href="#downloads" class="btn-hytale px-12 py-5 rounded-2xl font-extrabold text-white uppercase tracking-widest text-sm w-full sm:w-auto">
-                    Download Now
+
+            <div class="hero__actions" data-aos="fade-up" data-aos-delay="350">
+                <a href="#downloads" class="btn btn--primary">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                    Download
                 </a>
-                <a href="https://github.com/yyyumeniku/HyPrism" target="_blank" class="group px-12 py-5 rounded-2xl font-extrabold bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all flex items-center gap-3 uppercase tracking-widest text-sm w-full sm:w-auto justify-center">
-                    <svg class="w-5 h-5 opacity-70 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.43.372.823 1.102.823 2.222 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+                <a href="https://github.com/HyPrismTeam/HyPrism" target="_blank" rel="noopener" class="btn btn--glass">
+                    <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.43.372.823 1.102.823 2.222 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
                     GitHub
                 </a>
             </div>
 
-            <div class="mt-16 flex items-center justify-center gap-4 text-white/40 font-bold uppercase text-[10px] tracking-[0.3em]" data-aos="fade-in" data-aos-delay="600">
-                <span class="h-px w-8 bg-white/10"></span>
-                <span class="flex items-center gap-2">
-                    <span id="total-downloads" class="text-[#4ade80] text-sm">...</span> Downloads Completed
+            <div class="hero__stats" data-aos="fade-in" data-aos-delay="500">
+                <span class="hero__stats-line"></span>
+                <span class="hero__stats-text">
+                    <span id="total-downloads" class="text-accent" data-countup>0</span> downloads and counting
                 </span>
-                <span class="h-px w-8 bg-white/10"></span>
+                <span class="hero__stats-line"></span>
             </div>
         </div>
     </section>
 
-    <section id="downloads" class="py-32 bg-black/40 relative">
-        <div class="max-w-6xl mx-auto px-6">
-            <div class="flex flex-col items-center mb-20" data-aos="fade-up">
-                <h2 class="text-4xl font-black text-white mb-4 italic tracking-tighter">WORKSTATIONS</h2>
-                <div class="h-1.5 w-16 bg-[#207e5c] rounded-full"></div>
+    <!-- wave divider between hero and downloads -->
+    <div class="wave-divider wave-divider--top">
+        <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+            <path d="M0,80 C360,10 720,130 1080,50 C1260,10 1380,60 1440,40 L1440,120 L0,120 Z" fill="var(--bg-raised)"/>
+        </svg>
+    </div>
+
+    <!-- download section, the part everyone wants -->
+    <section class="downloads" id="downloads">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <h2 class="section-header__title">download hyprism.</h2>
+                <div class="section-header__bar"></div>
+                <p class="section-header__sub">pick your platform. it takes about ten seconds.</p>
             </div>
-            
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="hytale-card p-10 flex flex-col items-center text-center group" data-aos="fade-up" data-aos-delay="100">
-                    <div class="w-20 h-20 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-8 border border-blue-500/20 group-hover:rotate-6 transition-transform">
-                        <svg class="w-10 h-10 text-blue-400" fill="currentColor" viewBox="0 0 24 24"><path d="M0 3.449L9.75 2.1v9.45H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.45L0 20.699M10.949 12.6H24V24l-12.9-1.801"></path></svg>
+
+            <div class="downloads__grid">
+                <!-- windows card -->
+                <div class="card" data-aos="fade-up" data-aos-delay="100" data-tilt>
+                    <div class="card__icon card__icon--blue">
+                        <svg width="36" height="36" fill="currentColor" viewBox="0 0 24 24"><path d="M0 3.449L9.75 2.1v9.45H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.45L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>
                     </div>
-                    <h3 class="text-2xl font-bold text-white mb-3">Windows</h3>
-                    <p class="text-gray-500 text-sm mb-8 leading-relaxed">Optimized for Windows 10 and 11 with DirectX 12 support.</p>
-                    <a id="download-windows" href="#" class="btn-hytale w-full py-4 rounded-xl font-bold text-white text-xs uppercase tracking-widest">Download .EXE</a>
+                    <h3 class="card__title">windows</h3>
+                    <p class="card__desc">optimized for windows 10 and 11 with directx 12 support. works out of the box.</p>
+                    <a id="download-windows" href="#" class="btn btn--primary btn--block">download .exe</a>
                 </div>
 
-                <div class="hytale-card p-10 flex flex-col items-center text-center group" data-aos="fade-up" data-aos-delay="200">
-                    <div class="w-20 h-20 bg-white/5 rounded-2xl flex items-center justify-center mb-8 border border-white/10 group-hover:-rotate-6 transition-transform">
-                        <svg class="w-10 h-10 text-gray-200" fill="currentColor" viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"></path></svg>
+                <!-- macos card -->
+                <div class="card" data-aos="fade-up" data-aos-delay="200" data-tilt>
+                    <div class="card__icon card__icon--purple">
+                        <svg width="36" height="36" fill="currentColor" viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
                     </div>
-                    <h3 class="text-2xl font-bold text-white mb-3">macOS</h3>
-                    <p class="text-gray-500 text-sm mb-8 leading-relaxed">Maximum performance on Apple Silicon M1, M2, and M3 chips.</p>
-                    <a id="download-macos" href="#" class="btn-hytale w-full py-4 rounded-xl font-bold text-white text-xs uppercase tracking-widest">Download .DMG</a>
+                    <h3 class="card__title">macos</h3>
+                    <p class="card__desc">runs great on apple silicon. tested on m1, m2, m3, and m4 chips.</p>
+                    <a id="download-macos" href="#" class="btn btn--primary btn--block">download .dmg</a>
                 </div>
 
-                <div class="hytale-card p-10 flex flex-col items-center text-center group" data-aos="fade-up" data-aos-delay="300">
-                    <div class="w-20 h-20 bg-orange-500/10 rounded-2xl flex items-center justify-center mb-8 border border-orange-500/20 group-hover:scale-110 transition-transform">
-                        <svg class="w-10 h-10 text-orange-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12.504 0c-.155 0-.315.008-.48.021-4.226.333-3.105 4.807-3.17 6.298-.076 1.092-.3 1.953-1.05 3.02-.885 1.051-2.127 2.75-2.716 4.521-.278.832-.41 1.684-.287 2.489a.424.424 0 00-.11.135c-.26.268-.45.6-.663.839-.199.199-.485.267-.797.4-.313.136-.658.269-.864.68-.09.189-.136.394-.132.602 0 .199.027.4.055.536.058.399.116.728.04.97-.249.68-.28 1.145-.106 1.484.174.334.535.47.94.601.81.2 1.91.135 2.774.6.926.466 1.866.67 2.616.47.526-.116.97-.464 1.208-.946.587-.003 1.23-.269 2.26-.334.699-.058 1.574.267 2.577.2.025.134.063.198.114.333l.003.003c.391.778 1.113 1.132 1.884 1.071.771-.06 1.592-.536 2.257-1.306.631-.765 1.683-1.084 2.378-1.503.348-.199.629-.469.649-.853.023-.4-.2-.811-.714-1.376v-.097l-.003-.003c-.17-.2-.25-.535-.338-.926-.085-.401-.182-.786-.492-1.046h-.003c-.059-.054-.123-.067-.188-.135a.357.357 0 00-.19-.064c.431-1.278.264-2.55-.173-3.694-.533-1.41-1.465-2.638-2.175-3.483-.796-1.005-1.576-1.957-1.56-3.368.026-2.152.236-6.133-3.544-6.139z"></path></svg>
+                <!-- linux card -->
+                <div class="card" data-aos="fade-up" data-aos-delay="300" data-tilt>
+                    <div class="card__icon card__icon--cyan">
+                        <svg width="36" height="36" fill="currentColor" viewBox="0 0 24 24"><path d="M12.504 0c-.155 0-.315.008-.48.021-4.226.333-3.105 4.807-3.17 6.298-.076 1.092-.3 1.953-1.05 3.02-.885 1.051-2.127 2.75-2.716 4.521-.278.832-.41 1.684-.287 2.489a.424.424 0 0 0-.11.135c-.26.268-.45.6-.663.839-.199.199-.485.267-.797.4-.313.136-.658.269-.864.68-.09.189-.136.394-.132.602 0 .199.027.4.055.536.058.399.116.728.04.97-.249.68-.28 1.145-.106 1.484.174.334.535.47.94.601.81.2 1.91.135 2.774.6.926.466 1.866.67 2.616.47.526-.116.97-.464 1.208-.946.587-.003 1.23-.269 2.26-.334.699-.058 1.574.267 2.577.2.025.134.063.198.114.333l.003.003c.391.778 1.113 1.132 1.884 1.071.771-.06 1.592-.536 2.257-1.306.631-.765 1.683-1.084 2.378-1.503.348-.199.629-.469.649-.853.023-.4-.2-.811-.714-1.376v-.097l-.003-.003c-.17-.2-.25-.535-.338-.926-.085-.401-.182-.786-.492-1.046h-.003c-.059-.054-.123-.067-.188-.135a.357.357 0 0 0-.19-.064c.431-1.278.264-2.55-.173-3.694-.533-1.41-1.465-2.638-2.175-3.483-.796-1.005-1.576-1.957-1.56-3.368.026-2.152.236-6.133-3.544-6.139z"/></svg>
                     </div>
-                    <h3 class="text-2xl font-bold text-white mb-3">Linux</h3>
-                    <p class="text-gray-500 text-sm mb-8 leading-relaxed">Universal AppImage compatible with Ubuntu, Fedora, and Arch Linux.</p>
-                    <a id="download-linux" href="#" class="btn-hytale w-full py-4 rounded-xl font-bold text-white text-xs uppercase tracking-widest">Download .AppImage</a>
+                    <h3 class="card__title">linux</h3>
+                    <p class="card__desc">universal appimage that works on ubuntu, fedora, arch, and most other distros.</p>
+                    <a id="download-linux" href="#" class="btn btn--primary btn--block">download .appimage</a>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="contributors" class="py-32 bg-[#050806]">
-        <div class="max-w-7xl mx-auto px-6 text-center">
-            <h2 class="text-3xl font-black text-white mb-6 tracking-widest uppercase italic" data-aos="fade-up">System Architects</h2>
-            <p class="text-gray-500 text-sm mb-16 uppercase tracking-widest" data-aos="fade-up">Warriors who contributed to the code</p>
-            
-            <div id="contributors-list" class="flex flex-wrap justify-center gap-10" data-aos="fade-up">
-                
-                <a href="https://github.com/yyyumeniku" target="_blank" class="group relative">
-                    <div class="absolute -inset-1 bg-gradient-to-r from-[#207e5c] to-[#4ade80] rounded-full blur opacity-0 group-hover:opacity-50 transition duration-500"></div>
-                    <img src="https://avatars.githubusercontent.com/u/146843738?v=4" class="relative w-20 h-20 rounded-full border-4 border-[#121814] object-cover transition-transform group-hover:scale-110 shadow-2xl">
-                    <div class="mt-4 text-[10px] font-bold text-gray-500 uppercase tracking-tighter group-hover:text-white transition-colors">yyyumeniku</div>
-                </a>
-
-                <a href="https://github.com/fosterushka" target="_blank" class="group relative">
-                    <img src="https://avatars.githubusercontent.com/u/13575865?v=4" class="w-20 h-20 rounded-full border-2 border-white/5 transition-all group-hover:border-[#207e5c] group-hover:scale-110">
-                    <div class="mt-4 text-[10px] font-bold text-gray-500 uppercase tracking-tighter group-hover:text-white transition-colors">fosterushka</div>
-                </a>
-
-                <a href="https://github.com/district2" target="_blank" class="group relative">
-                    <img src="https://avatars.githubusercontent.com/u/111503426?v=4" class="w-20 h-20 rounded-full border-2 border-white/5 transition-all group-hover:border-[#207e5c] group-hover:scale-110">
-                    <div class="mt-4 text-[10px] font-bold text-gray-500 uppercase tracking-tighter group-hover:text-white transition-colors">district2</div>
-                </a>
-
-                <a href="https://github.com/CupRusk" target="_blank" class="group relative">
-                    <img src="https://avatars.githubusercontent.com/u/190711777?v=4" class="w-20 h-20 rounded-full border-2 border-white/5 transition-all group-hover:border-[#207e5c] group-hover:scale-110">
-                    <div class="mt-4 text-[10px] font-bold text-gray-500 uppercase tracking-tighter group-hover:text-white transition-colors">CupRusk</div>
-                </a>
-
-                <a href="https://github.com/RainyPixel" target="_blank" class="group relative">
-                    <img src="https://avatars.githubusercontent.com/u/44039577?v=4" class="w-20 h-20 rounded-full border-2 border-white/5 transition-all group-hover:border-[#207e5c] group-hover:scale-110">
-                    <div class="mt-4 text-[10px] font-bold text-gray-500 uppercase tracking-tighter group-hover:text-white transition-colors">RainyPixel</div>
-                </a>
-
-                <a href="https://github.com/apps/google-labs-jules" target="_blank" class="group relative">
-                    <img src="https://avatars.githubusercontent.com/in/842251?v=4" class="w-20 h-20 rounded-full border-2 border-white/5 transition-all group-hover:border-[#207e5c] group-hover:scale-110">
-                    <div class="mt-4 text-[10px] font-bold text-gray-500 uppercase tracking-tighter group-hover:text-white transition-colors">google-labs</div>
-                </a>
-
-                <a href="https://github.com/DoodMann" target="_blank" class="group relative">
-                    <img src="https://avatars.githubusercontent.com/u/66770566?v=4" class="w-20 h-20 rounded-full border-2 border-white/5 transition-all group-hover:border-[#207e5c] group-hover:scale-110">
-                    <div class="mt-4 text-[10px] font-bold text-gray-500 uppercase tracking-tighter group-hover:text-white transition-colors">DoodMann</div>
-                </a>
-
-                <a href="https://github.com/Zephyris-Pro" target="_blank" class="group relative">
-                    <img src="https://avatars.githubusercontent.com/u/200662396?v=4" class="w-20 h-20 rounded-full border-2 border-white/5 transition-all group-hover:border-[#207e5c] group-hover:scale-110">
-                    <div class="mt-4 text-[10px] font-bold text-gray-500 uppercase tracking-tighter group-hover:text-white transition-colors">Zephyris-Pro</div>
-                </a>
-
             </div>
         </div>
     </section>
 
-    <footer class="bg-black py-20 border-t border-white/5">
-        <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
-            <div class="text-left">
-                <div class="flex items-center gap-3 mb-6">
-                    <img src="assets/logo.svg" alt="Logo" class="h-8 w-8">
-                    <span class="text-xl font-black text-white italic">HYPRISM</span>
+    <!-- wave divider between downloads and contributors -->
+    <div class="wave-divider wave-divider--bottom">
+        <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+            <path d="M0,40 C180,100 540,0 900,70 C1100,110 1300,30 1440,60 L1440,0 L0,0 Z" fill="var(--bg-raised)"/>
+        </svg>
+    </div>
+
+    <!-- contributors section -->
+    <section class="contributors" id="contributors">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <h2 class="section-header__title">the people behind it.</h2>
+                <div class="section-header__bar"></div>
+                <p class="section-header__sub">real humans who wrote real code for this project.</p>
+            </div>
+
+            <div class="contributors__grid" data-aos="fade-up" data-aos-delay="100">
+                <a href="https://github.com/yyyumeniku" target="_blank" rel="noopener" class="contributor contributor--lead">
+                    <img src="https://avatars.githubusercontent.com/u/146843738?v=4" alt="yyyumeniku" class="contributor__avatar" loading="lazy">
+                    <span class="contributor__name">yyyumeniku</span>
+                </a>
+                <a href="https://github.com/YurCop" target="_blank" rel="noopener" class="contributor">
+                    <img src="https://github.com/YurCop.png" alt="YurCop" class="contributor__avatar" loading="lazy">
+                    <span class="contributor__name">YurCop</span>
+                </a>
+                <a href="https://github.com/aarav2709" target="_blank" rel="noopener" class="contributor">
+                    <img src="https://github.com/aarav2709.png" alt="aarav2709" class="contributor__avatar" loading="lazy">
+                    <span class="contributor__name">aarav2709</span>
+                </a>
+                <a href="https://github.com/fosterushka" target="_blank" rel="noopener" class="contributor">
+                    <img src="https://avatars.githubusercontent.com/u/13575865?v=4" alt="fosterushka" class="contributor__avatar" loading="lazy">
+                    <span class="contributor__name">fosterushka</span>
+                </a>
+                <a href="https://github.com/district2" target="_blank" rel="noopener" class="contributor">
+                    <img src="https://avatars.githubusercontent.com/u/111503426?v=4" alt="district2" class="contributor__avatar" loading="lazy">
+                    <span class="contributor__name">district2</span>
+                </a>
+                <a href="https://github.com/CupRusk" target="_blank" rel="noopener" class="contributor">
+                    <img src="https://avatars.githubusercontent.com/u/190711777?v=4" alt="CupRusk" class="contributor__avatar" loading="lazy">
+                    <span class="contributor__name">CupRusk</span>
+                </a>
+                <a href="https://github.com/RainyPixel" target="_blank" rel="noopener" class="contributor">
+                    <img src="https://avatars.githubusercontent.com/u/44039577?v=4" alt="RainyPixel" class="contributor__avatar" loading="lazy">
+                    <span class="contributor__name">RainyPixel</span>
+                </a>
+                <a href="https://github.com/apps/google-labs-jules" target="_blank" rel="noopener" class="contributor">
+                    <img src="https://avatars.githubusercontent.com/in/842251?v=4" alt="google-labs-jules" class="contributor__avatar" loading="lazy">
+                    <span class="contributor__name">google-labs</span>
+                </a>
+                <a href="https://github.com/DoodMann" target="_blank" rel="noopener" class="contributor">
+                    <img src="https://avatars.githubusercontent.com/u/66770566?v=4" alt="DoodMann" class="contributor__avatar" loading="lazy">
+                    <span class="contributor__name">DoodMann</span>
+                </a>
+                <a href="https://github.com/Zephyris-Pro" target="_blank" rel="noopener" class="contributor">
+                    <img src="https://avatars.githubusercontent.com/u/200662396?v=4" alt="Zephyris-Pro" class="contributor__avatar" loading="lazy">
+                    <span class="contributor__name">Zephyris-Pro</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- footer -->
+    <footer class="footer">
+        <div class="container footer__container">
+            <div class="footer__left">
+                <div class="footer__brand">
+                    <img src="assets/images/icon.png" alt="HyPrism" class="footer__logo">
+                    <span class="footer__name">HYPRISM</span>
                 </div>
-                <p class="text-gray-500 text-sm max-w-sm mb-6">HyPrism is a community project and is NOT affiliated with Hypixel Studios or Hytale.</p>
-                <div class="flex gap-6">
-                    <a href="https://buymeacoffee.com/yyyumeniku" target="_blank" class="text-xs font-bold uppercase tracking-widest text-[#d4a373] hover:brightness-125 transition">☕ Support the Project</a>
-                    <a href="https://github.com/yyyumeniku/HyPrism/issues" target="_blank" class="text-xs font-bold uppercase tracking-widest text-red-500 hover:brightness-125 transition">🚩 Report an Error</a>
+                <p class="footer__disclaimer">hyprism is a community project. it is not affiliated with hypixel studios or hytale in any way. all trademarks belong to their respective owners.</p>
+                <div class="footer__links">
+                    <a href="https://buymeacoffee.com/yyyumeniku" target="_blank" rel="noopener" class="footer__link footer__link--warm">support the project</a>
+                    <a href="https://github.com/HyPrismTeam/HyPrism/issues" target="_blank" rel="noopener" class="footer__link footer__link--red">report an issue</a>
+                    <a href="https://github.com/HyPrismTeam/hyprism-site" target="_blank" rel="noopener" class="footer__link footer__link--accent">website source</a>
                 </div>
             </div>
-            <div class="flex flex-col md:items-end gap-4">
-                <a href="https://github.com/YurCop" target="_blank" class="group flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-[#207e5c] transition-all">
-                    <div class="text-right">
-                        <div class="text-[10px] text-gray-500 font-bold uppercase">Maintained by</div>
-                        <div class="text-white font-bold">YurCop</div>
+            <div class="footer__right">
+                <a href="https://github.com/aarav2709" target="_blank" rel="noopener" class="footer__maintainer">
+                    <div class="footer__maintainer-info">
+                        <span class="footer__maintainer-label">maintained by</span>
+                        <span class="footer__maintainer-name">aarav2709</span>
                     </div>
-                    <img src="https://github.com/YurCop.png" class="w-12 h-12 rounded-xl shadow-2xl">
+                    <img src="https://github.com/aarav2709.png" alt="aarav2709" class="footer__maintainer-avatar">
                 </a>
-                <p class="text-[10px] text-gray-600 uppercase tracking-[0.2em]">© 2026 HyPrism Team. All rights reserved.</p>
+                <p class="footer__copy">&copy; 2026 hyprism team. all rights reserved.</p>
             </div>
         </div>
     </footer>
 
-    <script>
-        window.addEventListener('load', () => {
-            const preloader = document.getElementById('preloader');
-            setTimeout(() => { 
-                preloader.classList.add('preloader-hidden'); 
-                document.body.style.overflow = 'auto';
-            }, 1200);
-        });
-
-        const GITHUB_OWNER = 'yyyumeniku';
-        const GITHUB_REPO = 'HyPrism';
-
-        async function fetchStats() {
-            try {
-                const relResponse = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/releases`);
-                const releases = await relResponse.json();
-                
-                let total = 0;
-                releases.forEach(r => r.assets.forEach(a => total += a.download_count));
-                
-                const countEl = document.getElementById('total-downloads');
-                if(countEl) countEl.textContent = total.toLocaleString();
-
-                const latest = releases[0];
-                const assets = latest.assets;
-
-                const win = assets.find(a => a.name.endsWith('.exe'));
-                const mac = assets.find(a => a.name.endsWith('.dmg'));
-                const linux = assets.find(a => a.name.endsWith('.AppImage'));
-
-                if(win) document.getElementById('download-windows').href = win.browser_download_url;
-                if(mac) document.getElementById('download-macos').href = mac.browser_download_url;
-                if(linux) document.getElementById('download-linux').href = linux.browser_download_url;
-            } catch (e) { console.error("Error loading data", e); }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            fetchStats();
-            AOS.init({ 
-                duration: 1000, 
-                once: true,
-                offset: 100
-            });
-        });
-    </script>
-    <script>
-    document.addEventListener('contextmenu', event => event.preventDefault());
-
-    document.onkeydown = function(e) {
-        if (e.keyCode == 123) { 
-            return false;
-        }
-        if (e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0) || e.keyCode == 'C'.charCodeAt(0))) {
-            return false;
-        }
-        if (e.ctrlKey && (e.keyCode == 'U'.charCodeAt(0) || e.keyCode == 'S'.charCodeAt(0))) {
-            return false;
-        }
-    };
-
-    (function() {
-        setInterval(function() {
-            debugger;
-        }, 100);
-    })();
-
-    document.addEventListener('keydown', function(e) {
-        if (e.ctrlKey && e.keyCode == 83) { 
-            e.preventDefault();
-            alert("⚠️ Ação não permitida no YurCop.");
-        }
-    });
-
-    setInterval(() => {
-        console.clear();
-        console.log("%cYurCop Security", "color: purple; font-size: 20px; font-weight: bold;");
-        console.log("Acesso restrito ao código fonte.");
-    }, 1000);
-</script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="js/script.js"></script>
 </body>
 </html>
