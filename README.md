@@ -3,10 +3,9 @@
 [![Live](https://img.shields.io/badge/Live-hyprism.vercel.app-207e5c?style=for-the-badge)](https://hyprism.vercel.app)
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Support-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/yyyumeniku)
 
-Landing page for HyPrism. A free and open source third party launcher for Hytale, the game by Hypixel Studios. We are not affiliated with them.
+<img src = "assets/screenshot/image.png" align = "center">
 
-- **Repo:** [github.com/HyPrismTeam/HyPrism](https://github.com/HyPrismTeam/HyPrism)
-- **Website source:** [github.com/HyPrismTeam/hyprism-site](https://github.com/HyPrismTeam/hyprism-site)
+Landing page for HyPrism. A free and open source third party launcher for Hytale, the game by Hypixel Studios. We are not affiliated with them.
 
 ## Features
 
