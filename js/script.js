@@ -25,188 +25,195 @@ function burger() {
 }
 
 
-// ---- header scroll effect ----
-// adds shadow and opacity when scrolled.
-function headerScroll() {
-    const h = document.getElementById('header');
-    if (!h) return;
-    window.addEventListener('scroll', () => {
-        if (scrollY > 40) {
-            h.classList.add('header--scrolled');
-        } else {
-            h.classList.remove('header--scrolled');
-        }
-    }, { passive: true });
-}
+// ---- smooth scrolling (lenis) ----
+function initLenis() {
+    if (typeof Lenis === 'undefined') return;
 
+    const lenis = new Lenis({
+        lerp: 0.1,
+        smoothWheel: true
+    });
 
-// ---- scroll progress bar ----
-// the little bar at the top of the page.
-function scrollProgress() {
-    const bar = document.getElementById('scroll-progress');
-    if (!bar) return;
+    function raf(time) {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+    }
 
-    window.addEventListener('scroll', () => {
-        const total = document.documentElement.scrollHeight - window.innerHeight;
-        const pct = total > 0 ? (scrollY / total) * 100 : 0;
-        bar.style.width = pct + '%';
-    }, { passive: true });
-}
+    requestAnimationFrame(raf);
 
-
-// ---- smooth scrolling ----
-// makes anchor links glide instead of teleport.
-function smoothScroll() {
-    document.querySelectorAll('a[href^="#"]').forEach(a => {
-        a.addEventListener('click', e => {
-            const id = a.getAttribute('href');
-            if (id === '#') return;
-            const target = document.querySelector(id);
-            if (!target) return;
+    // hook up anchor links to lenis
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
             e.preventDefault();
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            const target = this.getAttribute('href');
+            if (target && target !== '#') {
+                lenis.scrollTo(target);
+            }
         });
     });
 }
 
 
-// ---- particle canvas ----
-// floating dots in the background. looks cool.
-function particles() {
-    const canvas = document.getElementById('particle-canvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+// ---- grid background hover effect ----
+// lights up 3d grid tiles near your cursor.
+function gridBackground() {
+    const grid = document.getElementById('grid-animation');
+    if (!grid) return;
 
-    let w, h, dots = [];
-    const COUNT = 50;
-    const CONNECT_DIST = 150;
+    // responsive grid size: smaller on mobile to save resources
+    const isMobile = window.innerWidth < 768;
+    const GRID_SIZE = isMobile ? 16 : 24;
+    grid.style.setProperty('--grid-size', GRID_SIZE);
 
-    function resize() {
-        w = canvas.width = window.innerWidth;
-        h = canvas.height = window.innerHeight;
-    }
+    const TILE_COUNT = GRID_SIZE * GRID_SIZE;
+    const MAX_DISTANCE = 130;
+    const tiles = [];
+    const centersX = new Float32Array(TILE_COUNT);
+    const centersY = new Float32Array(TILE_COUNT);
+    const active = [];
 
-    function spawn() {
-        dots = [];
-        for (let i = 0; i < COUNT; i++) {
-            dots.push({
-                x: Math.random() * w,
-                y: Math.random() * h,
-                vx: (Math.random() - 0.5) * 0.4,
-                vy: (Math.random() - 0.5) * 0.4,
-                r: Math.random() * 1.5 + 0.5
-            });
+    let gridRect = null;
+    let cellWidth = 0;
+    let cellHeight = 0;
+    let pointerX = window.innerWidth / 2;
+    let pointerY = window.innerHeight / 2;
+    let frame = 0;
+    let resizeTimeout = null;
+
+    function buildGrid() {
+        grid.innerHTML = '';
+        tiles.length = 0;
+        for (let i = 0; i < TILE_COUNT; i++) {
+            const tile = document.createElement('div');
+            tile.className = 'tile';
+            grid.appendChild(tile);
+            tiles.push(tile);
         }
     }
 
-    function draw() {
-        ctx.clearRect(0, 0, w, h);
+    buildGrid();
 
-        // move dots.
-        for (const d of dots) {
-            d.x += d.vx;
-            d.y += d.vy;
-            if (d.x < 0 || d.x > w) d.vx *= -1;
-            if (d.y < 0 || d.y > h) d.vy *= -1;
+    function recalcGridMetrics() {
+        gridRect = grid.getBoundingClientRect();
+        cellWidth = gridRect.width / GRID_SIZE;
+        cellHeight = gridRect.height / GRID_SIZE;
+
+        for (let row = 0; row < GRID_SIZE; row++) {
+            for (let col = 0; col < GRID_SIZE; col++) {
+                const idx = row * GRID_SIZE + col;
+                centersX[idx] = (col + 0.5) * cellWidth;
+                centersY[idx] = (row + 0.5) * cellHeight;
+            }
+        }
+    }
+
+    function updateTiles() {
+        if (!gridRect) {
+            recalcGridMetrics();
         }
 
-        // draw lines between nearby dots.
-        for (let i = 0; i < dots.length; i++) {
-            for (let j = i + 1; j < dots.length; j++) {
-                const dx = dots[i].x - dots[j].x;
-                const dy = dots[i].y - dots[j].y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < CONNECT_DIST) {
-                    const alpha = (1 - dist / CONNECT_DIST) * 0.15;
-                    ctx.strokeStyle = `rgba(123, 140, 255, ${alpha})`;
-                    ctx.lineWidth = 0.5;
-                    ctx.beginPath();
-                    ctx.moveTo(dots[i].x, dots[i].y);
-                    ctx.lineTo(dots[j].x, dots[j].y);
-                    ctx.stroke();
+        const mouseX = pointerX - gridRect.left;
+        const mouseY = pointerY - gridRect.top;
+
+        for (let i = 0; i < active.length; i++) {
+            tiles[active[i]].style.setProperty('--intensity', '0');
+        }
+        active.length = 0;
+
+        const minCol = Math.max(0, Math.floor((mouseX - MAX_DISTANCE) / cellWidth));
+        const maxCol = Math.min(GRID_SIZE - 1, Math.ceil((mouseX + MAX_DISTANCE) / cellWidth));
+        const minRow = Math.max(0, Math.floor((mouseY - MAX_DISTANCE) / cellHeight));
+        const maxRow = Math.min(GRID_SIZE - 1, Math.ceil((mouseY + MAX_DISTANCE) / cellHeight));
+
+        for (let row = minRow; row <= maxRow; row++) {
+            for (let col = minCol; col <= maxCol; col++) {
+                const idx = row * GRID_SIZE + col;
+                const dx = mouseX - centersX[idx];
+                const dy = mouseY - centersY[idx];
+                // optimize: use squared distance to avoid sqrt
+                const distSq = dx * dx + dy * dy;
+
+                if (distSq < MAX_DISTANCE * MAX_DISTANCE) {
+                    const distance = Math.sqrt(distSq);
+                    const intensity = 1 - distance / MAX_DISTANCE;
+                    tiles[idx].style.setProperty('--intensity', intensity.toFixed(2));
+                    active.push(idx);
                 }
             }
         }
 
-        // draw dots.
-        for (const d of dots) {
-            ctx.fillStyle = 'rgba(123, 140, 255, 0.4)';
-            ctx.beginPath();
-            ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
-            ctx.fill();
-        }
-
-        requestAnimationFrame(draw);
+        frame = 0;
     }
 
-    resize();
-    spawn();
-    draw();
+    function queueUpdate() {
+        if (!frame) {
+            frame = requestAnimationFrame(updateTiles);
+        }
+    }
+
+    // always listen for pointer moves
+    window.addEventListener('pointermove', event => {
+        // throttle: skip if frame is already requested
+        if (frame) return;
+        pointerX = event.clientX;
+        pointerY = event.clientY;
+        queueUpdate();
+    }, { passive: true });
 
     window.addEventListener('resize', () => {
-        resize();
-        spawn();
-    });
+        // debounce resize to prevent layout thrashing
+        if (resizeTimeout) clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            recalcGridMetrics();
+            queueUpdate();
+        }, 100);
+    }, { passive: true });
+
+    recalcGridMetrics();
+    queueUpdate();
 }
 
 
 // ---- 3d card tilt ----
 // cards tilt toward your mouse. fun to play with.
 function cardTilt() {
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+        return;
+    }
+
     const cards = document.querySelectorAll('[data-tilt]');
 
     cards.forEach(card => {
-        card.addEventListener('mousemove', e => {
+        let raf = 0;
+        let px = 0;
+        let py = 0;
+
+        const updateTilt = () => {
             const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+            const x = px - rect.left;
+            const y = py - rect.top;
             const cx = rect.width / 2;
             const cy = rect.height / 2;
             const rotateX = ((y - cy) / cy) * -8;
             const rotateY = ((x - cx) / cx) * 8;
 
             card.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-6px)`;
+            raf = 0;
+        };
+
+        card.addEventListener('pointermove', e => {
+            px = e.clientX;
+            py = e.clientY;
+            if (!raf) {
+                raf = requestAnimationFrame(updateTilt);
+            }
         });
 
-        card.addEventListener('mouseleave', () => {
+        card.addEventListener('pointerleave', () => {
             card.style.transform = 'perspective(800px) rotateX(0) rotateY(0) translateY(0)';
         });
     });
 }
-
-
-// ---- mouse tracking glow ----
-// the glow in the hero follows your cursor.
-function mouseGlow() {
-    const glow = document.getElementById('hero-glow');
-    const hero = document.getElementById('hero');
-    if (!glow || !hero) return;
-
-    hero.addEventListener('mousemove', e => {
-        const rect = hero.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        glow.style.transform = `translate(${x - 450}px, ${y - 450}px)`;
-    });
-}
-
-
-// ---- parallax on scroll ----
-// hero content moves slower than the page for depth.
-function parallax() {
-    const els = document.querySelectorAll('[data-parallax]');
-    if (!els.length) return;
-
-    window.addEventListener('scroll', () => {
-        const sy = scrollY;
-        els.forEach(el => {
-            const speed = parseFloat(el.dataset.parallax) || 0.05;
-            el.style.transform = `translateY(${sy * speed}px)`;
-        });
-    }, { passive: true });
-}
-
-
 // ---- count-up animation ----
 // numbers roll up from zero when visible.
 function countUp() {
@@ -315,26 +322,12 @@ async function links() {
 }
 
 
-// ---- aos setup ----
-// scroll animations from the library.
-function aos() {
-    if (typeof AOS !== 'undefined') {
-        AOS.init({ duration: 700, once: true, offset: 60, easing: 'ease-out-cubic' });
-    }
-}
-
-
 // ---- boot everything ----
 document.addEventListener('DOMContentLoaded', () => {
+    initLenis();
     burger();
-    headerScroll();
-    scrollProgress();
-    smoothScroll();
-    particles();
+    gridBackground();
     cardTilt();
-    mouseGlow();
-    parallax();
-    aos();
 
     // fetch data then setup count-up.
     downloads().then(() => countUp());

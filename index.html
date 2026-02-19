@@ -13,12 +13,9 @@
     <link rel="icon" href="assets/images/icon.png" type="image/png">
     <link rel="apple-touch-icon" href="assets/images/icon.png">
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
 </head>
 <body>
-
-    <!-- scroll progress bar at the very top -->
-    <div class="scroll-progress" id="scroll-progress"></div>
 
     <!-- sticky header that follows you everywhere -->
     <header class="header" id="header">
@@ -46,24 +43,25 @@
         <a href="https://github.com/HyPrismTeam/HyPrism" target="_blank" rel="noopener" class="mobile-nav__link">github</a>
     </div>
 
-    <!-- particle canvas lives behind the hero -->
-    <canvas id="particle-canvas" class="particle-canvas"></canvas>
+    <!-- interactive grid background -->
+    <div class="grid-background" aria-hidden="true">
+        <div class="grid-animation" id="grid-animation"></div>
+    </div>
 
     <!-- hero section, the grand entrance -->
     <section class="hero" id="hero">
-        <div class="hero__glow" id="hero-glow"></div>
-        <div class="hero__content" data-parallax="0.08">
-            <img src="assets/images/team_logo.png" alt="HyPrism" class="hero__logo" data-aos="zoom-in">
+        <div class="hero__content">
+            <img src="assets/images/team_logo.png" alt="HyPrism" class="hero__logo">
 
-            <h1 class="hero__title" data-aos="fade-up" data-aos-delay="150">
+            <h1 class="hero__title">
                 the <span class="text-gradient">open source</span> launcher for hytale.
             </h1>
 
-            <p class="hero__subtitle" data-aos="fade-up" data-aos-delay="250">
+            <p class="hero__subtitle">
                 hyprism is a free and open source third party launcher for hytale, the game by hypixel studios. we are not affiliated with them. just fans who wanted something better.
             </p>
 
-            <div class="hero__actions" data-aos="fade-up" data-aos-delay="350">
+            <div class="hero__actions">
                 <a href="#downloads" class="btn btn--primary">
                     <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
                     Download
@@ -74,7 +72,7 @@
                 </a>
             </div>
 
-            <div class="hero__stats" data-aos="fade-in" data-aos-delay="500">
+            <div class="hero__stats">
                 <span class="hero__stats-line"></span>
                 <span class="hero__stats-text">
                     <span id="total-downloads" class="text-accent" data-countup>0</span> downloads and counting
@@ -94,7 +92,7 @@
     <!-- download section, the part everyone wants -->
     <section class="downloads" id="downloads">
         <div class="container">
-            <div class="section-header" data-aos="fade-up">
+            <div class="section-header">
                 <h2 class="section-header__title">download hyprism.</h2>
                 <div class="section-header__bar"></div>
                 <p class="section-header__sub">pick your platform. it takes about ten seconds.</p>
@@ -102,7 +100,7 @@
 
             <div class="downloads__grid">
                 <!-- windows card -->
-                <div class="card" data-aos="fade-up" data-aos-delay="100" data-tilt>
+                <div class="card" data-tilt>
                     <div class="card__icon card__icon--blue">
                         <svg width="36" height="36" fill="currentColor" viewBox="0 0 24 24"><path d="M0 3.449L9.75 2.1v9.45H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.45L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>
                     </div>
@@ -112,7 +110,7 @@
                 </div>
 
                 <!-- macos card -->
-                <div class="card" data-aos="fade-up" data-aos-delay="200" data-tilt>
+                <div class="card" data-tilt>
                     <div class="card__icon card__icon--purple">
                         <svg width="36" height="36" fill="currentColor" viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
                     </div>
@@ -122,7 +120,7 @@
                 </div>
 
                 <!-- linux card -->
-                <div class="card" data-aos="fade-up" data-aos-delay="300" data-tilt>
+                <div class="card" data-tilt>
                     <div class="card__icon card__icon--cyan">
                         <svg width="36" height="36" fill="currentColor" viewBox="0 0 24 24"><path d="M12.504 0c-.155 0-.315.008-.48.021-4.226.333-3.105 4.807-3.17 6.298-.076 1.092-.3 1.953-1.05 3.02-.885 1.051-2.127 2.75-2.716 4.521-.278.832-.41 1.684-.287 2.489a.424.424 0 0 0-.11.135c-.26.268-.45.6-.663.839-.199.199-.485.267-.797.4-.313.136-.658.269-.864.68-.09.189-.136.394-.132.602 0 .199.027.4.055.536.058.399.116.728.04.97-.249.68-.28 1.145-.106 1.484.174.334.535.47.94.601.81.2 1.91.135 2.774.6.926.466 1.866.67 2.616.47.526-.116.97-.464 1.208-.946.587-.003 1.23-.269 2.26-.334.699-.058 1.574.267 2.577.2.025.134.063.198.114.333l.003.003c.391.778 1.113 1.132 1.884 1.071.771-.06 1.592-.536 2.257-1.306.631-.765 1.683-1.084 2.378-1.503.348-.199.629-.469.649-.853.023-.4-.2-.811-.714-1.376v-.097l-.003-.003c-.17-.2-.25-.535-.338-.926-.085-.401-.182-.786-.492-1.046h-.003c-.059-.054-.123-.067-.188-.135a.357.357 0 0 0-.19-.064c.431-1.278.264-2.55-.173-3.694-.533-1.41-1.465-2.638-2.175-3.483-.796-1.005-1.576-1.957-1.56-3.368.026-2.152.236-6.133-3.544-6.139z"/></svg>
                     </div>
@@ -144,52 +142,60 @@
     <!-- contributors section -->
     <section class="contributors" id="contributors">
         <div class="container">
-            <div class="section-header" data-aos="fade-up">
+            <div class="section-header">
                 <h2 class="section-header__title">the people behind it.</h2>
                 <div class="section-header__bar"></div>
                 <p class="section-header__sub">real humans who wrote real code for this project.</p>
             </div>
 
-            <div class="contributors__grid" data-aos="fade-up" data-aos-delay="100">
+            <div class="contributors__grid">
+                <a href="https://github.com/freakdaniel" target="_blank" rel="noopener" class="contributor">
+                    <img src="https://avatars.githubusercontent.com/freakdaniel?size=128" alt="freakdaniel" class="contributor__avatar" loading="lazy" referrerpolicy="no-referrer">
+                    <span class="contributor__name">freakdaniel</span>
+                </a>
+                <a href="https://github.com/XargonWan" target="_blank" rel="noopener" class="contributor">
+                    <img src="https://avatars.githubusercontent.com/XargonWan?size=128" alt="XargonWan" class="contributor__avatar" loading="lazy" referrerpolicy="no-referrer">
+                    <span class="contributor__name">XargonWan</span>
+                </a>
                 <a href="https://github.com/yyyumeniku" target="_blank" rel="noopener" class="contributor contributor--lead">
-                    <img src="https://avatars.githubusercontent.com/u/146843738?v=4" alt="yyyumeniku" class="contributor__avatar" loading="lazy">
+                    <img src="https://avatars.githubusercontent.com/yyyumeniku?size=128" alt="yyyumeniku" class="contributor__avatar" loading="lazy" referrerpolicy="no-referrer">
                     <span class="contributor__name">yyyumeniku</span>
                 </a>
                 <a href="https://github.com/YurCop" target="_blank" rel="noopener" class="contributor">
-                    <img src="https://github.com/YurCop.png" alt="YurCop" class="contributor__avatar" loading="lazy">
+                    <img src="https://avatars.githubusercontent.com/YurCop?size=128" alt="YurCop" class="contributor__avatar" loading="lazy" referrerpolicy="no-referrer">
                     <span class="contributor__name">YurCop</span>
                 </a>
                 <a href="https://github.com/aarav2709" target="_blank" rel="noopener" class="contributor">
-                    <img src="https://github.com/aarav2709.png" alt="aarav2709" class="contributor__avatar" loading="lazy">
+                    <img src="https://avatars.githubusercontent.com/aarav2709?size=128" alt="aarav2709" class="contributor__avatar" loading="lazy" referrerpolicy="no-referrer">
                     <span class="contributor__name">aarav2709</span>
                 </a>
                 <a href="https://github.com/fosterushka" target="_blank" rel="noopener" class="contributor">
-                    <img src="https://avatars.githubusercontent.com/u/13575865?v=4" alt="fosterushka" class="contributor__avatar" loading="lazy">
+                    <img src="https://avatars.githubusercontent.com/fosterushka?size=128" alt="fosterushka" class="contributor__avatar" loading="lazy" referrerpolicy="no-referrer">
                     <span class="contributor__name">fosterushka</span>
                 </a>
-                <a href="https://github.com/district2" target="_blank" rel="noopener" class="contributor">
-                    <img src="https://avatars.githubusercontent.com/u/111503426?v=4" alt="district2" class="contributor__avatar" loading="lazy">
-                    <span class="contributor__name">district2</span>
-                </a>
                 <a href="https://github.com/CupRusk" target="_blank" rel="noopener" class="contributor">
-                    <img src="https://avatars.githubusercontent.com/u/190711777?v=4" alt="CupRusk" class="contributor__avatar" loading="lazy">
+                    <img src="https://avatars.githubusercontent.com/CupRusk?size=128" alt="CupRusk" class="contributor__avatar" loading="lazy" referrerpolicy="no-referrer">
                     <span class="contributor__name">CupRusk</span>
                 </a>
                 <a href="https://github.com/RainyPixel" target="_blank" rel="noopener" class="contributor">
-                    <img src="https://avatars.githubusercontent.com/u/44039577?v=4" alt="RainyPixel" class="contributor__avatar" loading="lazy">
+                    <img src="https://avatars.githubusercontent.com/RainyPixel?size=128" alt="RainyPixel" class="contributor__avatar" loading="lazy" referrerpolicy="no-referrer">
                     <span class="contributor__name">RainyPixel</span>
                 </a>
-                <a href="https://github.com/apps/google-labs-jules" target="_blank" rel="noopener" class="contributor">
-                    <img src="https://avatars.githubusercontent.com/in/842251?v=4" alt="google-labs-jules" class="contributor__avatar" loading="lazy">
-                    <span class="contributor__name">google-labs</span>
-                </a>
                 <a href="https://github.com/DoodMann" target="_blank" rel="noopener" class="contributor">
-                    <img src="https://avatars.githubusercontent.com/u/66770566?v=4" alt="DoodMann" class="contributor__avatar" loading="lazy">
+                    <img src="https://avatars.githubusercontent.com/DoodMann?size=128" alt="DoodMann" class="contributor__avatar" loading="lazy" referrerpolicy="no-referrer">
                     <span class="contributor__name">DoodMann</span>
                 </a>
                 <a href="https://github.com/Zephyris-Pro" target="_blank" rel="noopener" class="contributor">
-                    <img src="https://avatars.githubusercontent.com/u/200662396?v=4" alt="Zephyris-Pro" class="contributor__avatar" loading="lazy">
+                    <img src="https://avatars.githubusercontent.com/Zephyris-Pro?size=128" alt="Zephyris-Pro" class="contributor__avatar" loading="lazy" referrerpolicy="no-referrer">
                     <span class="contributor__name">Zephyris-Pro</span>
+                </a>
+                <a href="https://github.com/FowlBytez" target="_blank" rel="noopener" class="contributor">
+                    <img src="https://avatars.githubusercontent.com/FowlBytez?size=128" alt="FowlBytez" class="contributor__avatar" loading="lazy" referrerpolicy="no-referrer">
+                    <span class="contributor__name">FowlBytez</span>
+                </a>
+                <a href="https://github.com/denuvoless" target="_blank" rel="noopener" class="contributor">
+                    <img src="https://avatars.githubusercontent.com/denuvoless?size=128" alt="denuvoless" class="contributor__avatar" loading="lazy" referrerpolicy="no-referrer">
+                    <span class="contributor__name">denuvoless</span>
                 </a>
             </div>
         </div>
@@ -216,14 +222,13 @@
                         <span class="footer__maintainer-label">maintained by</span>
                         <span class="footer__maintainer-name">aarav2709</span>
                     </div>
-                    <img src="https://github.com/aarav2709.png" alt="aarav2709" class="footer__maintainer-avatar">
+                    <img src="https://avatars.githubusercontent.com/aarav2709?size=128" alt="aarav2709" class="footer__maintainer-avatar" referrerpolicy="no-referrer">
                 </a>
                 <p class="footer__copy">&copy; 2026 hyprism team. all rights reserved.</p>
             </div>
         </div>
     </footer>
 
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="js/script.js"></script>
 </body>
 </html>
