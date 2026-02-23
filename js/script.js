@@ -288,8 +288,5 @@ document.addEventListener('DOMContentLoaded', () => {
     initLenis();
     burger();
     cardTilt();
-
-    // fetch data then setup count-up.
-    downloads().then(() => countUp());
-    links();
+    countUp();
 });
